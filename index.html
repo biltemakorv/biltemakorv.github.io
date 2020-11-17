@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-  body {
+body {
     background-color: #707070;
     margin: 5px;
     user-select: none;
@@ -18,16 +18,6 @@
     max-width: 800px;
     justify-content: space-between;
     margin: auto;
-}
-@media (max-width: 800px) {
-    .container, .start-container, .graph-container {
-        flex-direction: column;
-    }
-}
-@media (max-width: 800px) {
-    .item {
-        min-width: 100%;
-    }
 }
 
 
@@ -57,7 +47,7 @@
     .item:nth-child(3n-2) {
         width: 66%;
         /*font-size: 26vw;*/
-        font-size: 220px;
+        font-size: 215px;
         line-height: 77%;
     }
 
@@ -205,11 +195,14 @@ ul {
 }
 
 .btn {
-    height: 42%;
-    width: 45%;
+/*    height: 42%;
+    width: 45%;*/
+    height: 80px;
+    width: 80px;
     border-radius: 50%;
     border: 1px solid #555555;
-    font-size: 1.2em;
+    /*font-size: 1.2em;*/
+    font-size: 45px;
     line-height: 180%;
 }
 
@@ -237,7 +230,8 @@ ul {
     width: 40%;
     justify-content: center;
     align-items: center;
-    font-size: 3.5em;
+    /*font-size: 3.5em;*/
+    font-size: 140px;
 }
 
 .blink {
@@ -249,11 +243,28 @@ ul {
         opacity: 0;
     }
 }
+
+@media (max-width: 800px) {
+    .container, .start-container, .graph-container {
+        flex-direction: column;
+    }
+
+    .item {
+        min-width: 100%;
+    }
+
+    .hobs, .controls {
+        width: 45%;
+    }
+
+    .timer {
+        font-size: 50px;
+    }
+}
+
     </style>
 </head>
 <body>
-
-   
 <div class="container">
     <div class="item" id="item1">
         <ul>
@@ -275,16 +286,16 @@ ul {
     </div>
     <div class="item" id="item3">
         <ul>
-            <li class="date-day"></li>
-            <li class="date-number"></li>
-            <li class="date-monthweek"></li>
+            <li class="date-day">Mandag</li>
+            <li class="date-number">17</li>
+            <li class="date-monthweek">Nov v48</li>
         </ul>
     </div>
-    <div class="item" id="item4"></div>
+    <div class="item" id="item4">12:30</div>
     <div class="item" id="item5">
         <ul>
-            <li class="quote"></li>
-            <li class="author"></li>
+            <li class="quote">Det var en fin kvall</li>
+            <li class="author">Roger Ljung</li>
         </ul>
     </div>
     <div class="item" id="item6">
@@ -325,6 +336,5 @@ ul {
         </div>
     </div>
 </div>
-
 </body>
 </html>
