@@ -5,10 +5,10 @@
     <title>TIWE1</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="preconnect" href="https://fonts.gstatic.com">
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;400;500&display=swap" rel="stylesheet">
-<style>
-    body {
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;400;500&display=swap" rel="stylesheet">
+    <style>
+        body {
     background-color: #707070;
     margin: 5px;
     user-select: none;
@@ -55,18 +55,16 @@
         width: 100%;
     }
 
-.padding {
-    height: 5%;
-    width: 100%;
-}
-
 .current-temp, .current-time {
-    /*background:green;*/
     width: 100%;
     /*font-size: 26vw;*/
     font-size: 190px;
     line-height: 80%;
+}
 
+.padding {
+    height: 5%;
+    width: 100%;
 }
 
 .timestamp {
@@ -262,6 +260,9 @@ audio {
 }
 
 @media (max-width: 799px) {
+    body {
+        overflow: auto;
+    }
     .container {
         flex-direction: column;
     }
@@ -270,88 +271,95 @@ audio {
         min-width: 100%;
     }
     .current-temp, .current-time {
-        font-size: 170px;
+        font-size: 180px;
     }
 
     .hobs, .controls {
-        width: 200px;
+        width: 150px;
+    }
+    .btn {
+        /*    height: 42%;
+    width: 45%;*/
+        height: 50px;
+        width: 50px;
+        font-size: 20px;
+        line-height: 200%;
     }
 
     .timer {
         font-size: 50px;
-        width: 17%;
+        width: 200px;
     }
 }
-
-</style>
+    </style>
 </head>
 <body>
-<div class="container">
-    <div class="item" id="item1">
-        <div class="padding"></div>
-        <div class="current-temp">-10.5</div>
-        <div class="timestamp">16:30 Hagaberg</div>
-    </div>
-    <div class="item" id="item2">
-        <div class="high-low">23 | 12</div>
-        <div class="rain">0 mm</div>
-        <div class="wind">9 m/s</div>
-        <div>
-            <audio controls>
-                <source src="http://sverigesradio.se/topsy/direkt/132-hi.mp3" type="audio/mpeg" quality="high">
-                Your browser does not support the audio element.
-            </audio>
+    <div class="container">
+        <div class="item" id="item1">
+            <div class="padding"></div>
+            <div class="current-temp">-10.5</div>
+            <div class="timestamp">16:30 Hagaberg</div>
         </div>
-    </div>
-    <div class="item" id="item3">
-        <div class="date-day">Onsdag</div>
-        <div class="date-number">18</div>
-        <div class="date-monthweek">Nov v47</div>
-    </div>
-    <div class="item" id="item4">
-        <div class="current-time">21:54</div>
-    </div>
-    <div class="item" id="item5">
+        <div class="item" id="item2">
+            <div class="high-low">23 | 12</div>
+            <div class="rain">0 mm</div>
+            <div class="wind">9 m/s</div>
+            <div>
+                <audio controls>
+                    <source src="http://sverigesradio.se/topsy/direkt/132-hi.mp3" type="audio/mpeg" quality="high">
+                    Your browser does not support the audio element.
+                </audio>
+            </div>
+        </div>
+        <div class="item" id="item3">
+            <div class="date-day">Onsdag</div>
+            <div class="date-number">18</div>
+            <div class="date-monthweek">Nov v47</div>
+        </div>
+        <div class="item" id="item4">
+            <div class="current-time">21:54</div>
+        </div>
+        <div class="item" id="item5">
             <div class="quote">Det var en fin kvallDet var en fin kvallDet var en fin kvallDet var en fin kvallDet var en fin kvallDet var en fin kvall</div>
             <div class="author">Roger Ljung</div>
-    </div>
-    <div class="item" id="item6">
-        <div class="graph-container"></div>
-    </div>
-    <div class="item" id="item7">
-        <div class="timer-container-1">
-            <div class="hobs">
-                <div class="btn" id="hob-1"></div>
-                <div class="btn" id="hob-2"></div>
-                <div class="btn" id="hob-3"></div>
-                <div class="btn" id="hob-4"></div>
+        </div>
+        <div class="item" id="item6">
+            <div class="graph-container"></div>
+        </div>
+        <div class="item" id="item7">
+            <div class="timer-container-1">
+                <div class="hobs">
+                    <div class="btn" id="hob-1"></div>
+                    <div class="btn" id="hob-2"></div>
+                    <div class="btn" id="hob-3"></div>
+                    <div class="btn" id="hob-4"></div>
+                </div>
+                <div class="timer">00:00</div>
+                <div class="controls">
+                    <div class="btn" id="plus">+</div>
+                    <div class="btn" id="start-pause">&#9654;</div>
+                    <div class="btn" id="minus">-</div>
+                    <div class="btn" id="stop">&#9632;</div>
+                </div>
             </div>
-            <div class="timer">00:00</div>
-            <div class="controls">
-                <div class="btn" id="plus">+</div>
-                <div class="btn" id="start-pause">&#9654;</div>
-                <div class="btn" id="minus">-</div>
-                <div class="btn" id="stop">&#9632;</div>
+        </div>
+        <div class="item" id="item8">
+            <div class="timer-container-2">
+                <div class="hobs">
+                    <div class="btn" id="hob-1"></div>
+                    <div class="btn" id="hob-2"></div>
+                    <div class="btn" id="hob-3"></div>
+                    <div class="btn" id="hob-4"></div>
+                </div>
+                <div class="timer">00:00</div>
+                <div class="controls">
+                    <div class="btn" id="plus">+</div>
+                    <div class="btn" id="start-pause">&#9654;</div>
+                    <div class="btn" id="minus">-</div>
+                    <div class="btn" id="stop">&#9632;</div>
+                </div>
             </div>
         </div>
     </div>
-    <div class="item" id="item8">
-        <div class="timer-container-2">
-            <div class="hobs">
-                <div class="btn" id="hob-1"></div>
-                <div class="btn" id="hob-2"></div>
-                <div class="btn" id="hob-3"></div>
-                <div class="btn" id="hob-4"></div>
-            </div>
-            <div class="timer">00:00</div>
-            <div class="controls">
-                <div class="btn" id="plus">+</div>
-                <div class="btn" id="start-pause">&#9654;</div>
-                <div class="btn" id="minus">-</div>
-                <div class="btn" id="stop">&#9632;</div>
-            </div>
-        </div>
-    </div>
-</div>
 </body>
 </html>
