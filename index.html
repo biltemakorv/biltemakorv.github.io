@@ -78,7 +78,7 @@
         }
 
         audio {
-            width: 200px;
+            width: 155px;
             height: 30px;
             outline: none;
         }
@@ -182,10 +182,7 @@
 
         .timer-container-1, .timer-container-2 {
             display: flex;
-            /*justify-content: space-around;*/
             align-items: center;
-            /*    width: 90%;
-    height: 90%;*/
             justify-content: center;
         }
 
@@ -194,26 +191,19 @@
             justify-content: space-around;
             align-items: center;
             flex-wrap: wrap;
-            /*align-items: center;*/
-            /*margin-left: 0%;*/
             width: 25%;
-            /*height: 94%;*/
         }
 
         .hobs {
             border: 1px solid #555555;
             border-radius: 25px;
-            /*margin-left: 1%;*/
         }
 
         .btn {
-            /*    height: 10vw;
-    width: 10vw;*/
             height: 80px;
             width: 80px;
             border-radius: 50%;
             border: 1px solid #555555;
-            /*font-size: 1.2em;*/
             font-size: 45px;
             line-height: 170%;
             margin-top: 2%;
@@ -274,11 +264,7 @@
             }
 
             .current-temp, .current-time {
-                font-size: 150px;
-            }
-
-            .hobs, .controls {
-                /*width: 150px;*/
+                font-size: 135px;
             }
 
             .btn {
@@ -290,7 +276,6 @@
 
             .timer {
                 font-size: 60px;
-                /*width: 200px;*/
             }
         }
     </style>
@@ -337,6 +322,10 @@
                     <div class="btn" id="hob-4"></div>
                 </div>
                 <div class="timer">00:00</div>
+                <audio id="alarm" loop>
+                    <source src="alarm.mp3" type="audio/mpeg">
+                    Your browser does not support the audio element.
+                </audio>
                 <div class="controls">
                     <div class="btn" id="plus">+</div>
                     <div class="btn" id="start-pause">&#9654;</div>
@@ -354,6 +343,10 @@
                     <div class="btn" id="hob-4"></div>
                 </div>
                 <div class="timer">00:00</div>
+                <audio id="alarm" loop>
+                    <source src="alarm.mp3" type="audio/mpeg">
+                    Your browser does not support the audio element.
+                </audio>
                 <div class="controls">
                     <div class="btn" id="plus">+</div>
                     <div class="btn" id="start-pause">&#9654;</div>
