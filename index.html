@@ -33,8 +33,6 @@
             height: 230px;
             align-items: center;
             margin-bottom: 1%;
-            /*font-size: 4.5vw;*/
-            /*font-size: max(4.5vw, 40px);*/
             justify-content: center;
             text-align: center;
             font-weight: bold;
@@ -55,7 +53,6 @@
 
         .current-temp, .current-time {
             width: 100%;
-            /*font-size: 26vw;*/
             font-size: 190px;
             line-height: 80%;
         }
@@ -66,8 +63,6 @@
         }
 
         .timestamp {
-            /*font-size: min(2vw, 30px);*/
-            /*background: blue;*/
             width: 100%;
             font-size: 12px;
         }
@@ -89,10 +84,8 @@
         }
 
         .date-day {
-            /*font-size: 1em;*/
             font-size: 45px;
             height: 28%;
-            /*background:blue;*/
         }
 
         .date-number {
@@ -105,12 +98,10 @@
         }
 
         .quote {
-            /*font-size: 0.75em;*/
             font-size: 25px;
             font-weight: normal;
             margin-left: 12%;
             margin-right: 12%;
-            /*background: blue;*/
             width: 100%;
             margin-top: 7%;
         }
@@ -119,7 +110,8 @@
             font-size: 20px;
             font-weight: normal;
             font-style: italic;
-            margin-bottom: 10%;
+            margin-bottom: 4%;
+            margin-top: 1%;
             width: 100%;
         }
 
@@ -137,7 +129,6 @@
         .graph-item, .graph-item-cold {
             width: 1.03%;
             border-radius: 3px;
-            /*font-size: 0.4em;*/
             font-size: 15px;
             font-weight: normal;
         }
@@ -210,12 +201,6 @@
             margin-bottom: 2%;
         }
 
-            .btn:hover, .btn:active {
-                position: relative;
-                top: 1px;
-            }
-
-
         .controls > .btn:active {
             background: #cdc9c3;
             color: black;
@@ -235,7 +220,6 @@
             width: 40%;
             justify-content: center;
             align-items: center;
-            /*font-size: 3.5em;*/
             font-size: 140px;
             margin-right: 5%;
         }
@@ -285,37 +269,53 @@
             document.querySelector("#item2").style.display = "flex"
             document.querySelector("#item3").style.display = "flex"
             document.querySelector("#item4").style.display = "flex"
-            document.querySelector("#item5").style.display = "flex"
-            document.querySelector("#item6").style.display = "flex"
-            document.querySelector("#item7").style.display = "flex"
-            document.querySelector("#item8").style.display = "flex"
+            document.querySelector("#item5").style.display = "none"
+            document.querySelector("#item6").style.display = "none"
+            document.querySelector("#item7").style.display = "none"
+            document.querySelector("#item8").style.display = "none"
 
             document.querySelectorAll(".item").forEach((div) => {
                 div.addEventListener("click", showPage)
             })
 
-
-
-
-
             const quote_url = 'https://type.fit/api/quotes'
             const forecast_url = 'https://opendata-download-metfcst.smhi.se/api/category/pmp3g/version/2/geotype/point/lon/15.616092/lat/58.394557/data.json'
-            const temp_url = 'http://api.temperatur.nu/tnu_1.12.php?lat=58.394557&lon=15.616092&num=3&cli=test_app2'
+            const temp_url = 'https://api.temperatur.nu/tnu_1.12.php?lat=58.394557&lon=15.616092&num=3&cli=test_app2'
 
-            //fetchData(quote_url, renderQuote)
-            //fetchData(forecast_url, filterForecast, renderGraph, renderSummary)
-            //requestData(temp_url, filterCurrentTemp, renderCurrentTemp)
-            //getCurrentDate(renderCurrentDate)
-            setInterval(getCurrentDate, 1000)
+            fetchData(forecast_url, filterForecast, renderGraph, renderSummary)
+            requestData(temp_url, filterCurrentTemp, renderCurrentTemp)
+            getCurrentDate(renderCurrentDate)
 
+            setInterval(getCurrentDate, 1000, renderCurrentDate)
+            setInterval(requestData, 480000, temp_url, filterCurrentTemp, renderCurrentTemp)
+            setInterval(fetchData, 600000, forecast_url, filterForecast, renderGraph, renderSummary)
+
+            fetchData(quote_url, renderQuote)
 
             const timer1 = createTimer(1, 0)
-            const timer2 = createTimer(2, 0)
-
-            //timer1()
-
+            const timer2 = createTimer(2, 600)
         });
 
+        function showPage() {
+            if (event.target.className != 'btn') {
+                document.querySelectorAll(".item").forEach((div) => {
+                    div.style.display = 'none'
+                })
+                if (this.id == "item5" || this.id == "item6" || this.id == "item7" || this.id == "item8") {
+                    document.querySelector("#item1").style.display = "flex"
+                    document.querySelector("#item2").style.display = "flex"
+                    document.querySelector("#item3").style.display = "flex"
+                    document.querySelector("#item4").style.display = "flex"
+                } else if (this.id == "item1" || this.id == "item2") {
+                    document.querySelector("#item5").style.display = "flex"
+                    document.querySelector("#item6").style.display = "flex"
+
+                } else {
+                    document.querySelector("#item7").style.display = "flex"
+                    document.querySelector("#item8").style.display = "flex"
+                }
+            }
+        }
 
         function createTimer(n, time) {
 
@@ -364,12 +364,12 @@
             display_countdown(counter);
 
             function plus() {
-                counter += 1;
+                counter += 60;
                 display_countdown(counter);
             }
 
             function minus() {
-                if (counter >= 1) {
+                if (counter >= 60) {
                     counter -= 60;
                 }
                 display_countdown(counter);
@@ -440,27 +440,6 @@
             }
         }
 
-        function showPage() {
-            if (event.target.className != 'btn') {
-                document.querySelectorAll(".item").forEach((div) => {
-                    div.style.display = 'none'
-                })
-                if (this.id == "item5" || this.id == "item6" || this.id == "item7" || this.id == "item8") {
-                    document.querySelector("#item1").style.display = "flex"
-                    document.querySelector("#item2").style.display = "flex"
-                    document.querySelector("#item3").style.display = "flex"
-                    document.querySelector("#item4").style.display = "flex"
-                } else if (this.id == "item1" || this.id == "item2") {
-                    document.querySelector("#item5").style.display = "flex"
-                    document.querySelector("#item6").style.display = "flex"
-
-                } else {
-                    document.querySelector("#item7").style.display = "flex"
-                    document.querySelector("#item8").style.display = "flex"
-                }
-            }
-        }
-
         function fetchData(url, callback, callback2, callback3) {
             fetch(`${url}`)
                 .then(response => response.json())
@@ -472,9 +451,9 @@
         function filterForecast(data, callback2, callback3) {
             document.querySelector(".graph-container").innerHTML = ''
 
-            today = data.timeSeries[0].validTime.slice(8, 10)
-            flag = true
-            dict2 = { 'warmest': -50, 'coldest': 50, 'windiest': 0, 'total_precip': 0 }
+            let today = data.timeSeries[0].validTime.slice(8, 10)
+            let flag = true
+            let dict2 = { 'warmest': -50, 'coldest': 50, 'windiest': 0, 'total_precip': 0 }
             loop1:
             for (i = 0; i < 24; i++) {
                 dict = {}
@@ -514,9 +493,9 @@
         }
 
         function renderSummary(dict) {
-            document.querySelector('.high-low').append(Math.round(dict['warmest']) + ' | ' + Math.round(dict['coldest']))
-            document.querySelector('.rain').append(Math.round(dict['total_precip']) + ' mm')
-            document.querySelector('.wind').append(Math.round(dict['windiest']) + ' m/s')
+            document.querySelector('.high-low').textContent = Math.round(dict['warmest']) + ' | ' + Math.round(dict['coldest'])
+            document.querySelector('.rain').textContent = Math.round(dict['total_precip']) + ' mm'
+            document.querySelector('.wind').textContent = Math.round(dict['windiest']) + ' m/s'
         }
 
         function renderGraph(dict) {
@@ -551,23 +530,23 @@
                     return '60%'
                 }
             }
-            temp = dict["temp"]
-            prec = dict["prec"]
-            wind = dict["wind"]
-            time = dict["time"]
+            let temp = dict["temp"]
+            let prec = dict["prec"]
+            let wind = dict["wind"]
+            let time = dict["time"]
 
             const tempSpan = document.createElement("span")
             tempSpan.className = "graph-text"
-            tempSpan.innerHTML = Math.round(temp)
+            tempSpan.textContent = Math.round(temp)
             const precSpan = document.createElement("span")
             precSpan.className = "graph-text"
-            precSpan.innerHTML = checkZero(prec)
+            precSpan.textContent = checkZero(prec)
             const windSpan = document.createElement("span")
             windSpan.className = "graph-text"
-            windSpan.innerHTML = checkZero(wind)
+            windSpan.textContent = checkZero(wind)
             const timeSpan = document.createElement("span")
             timeSpan.className = checkDayText(time)
-            timeSpan.innerHTML = time
+            timeSpan.textContent = time
 
             const tempDiv = document.createElement("div")
             tempDiv.style.height = `${temp + 30}%`
@@ -595,7 +574,7 @@
         }
 
         function requestData(url, callback, callback2) {
-            const xhr = new XMLHttpRequest() //let
+            const xhr = new XMLHttpRequest()
             xhr.open('GET', `${url}`)
             xhr.send()
 
@@ -618,7 +597,7 @@
         }
 
         function filterCurrentTemp(xmlDocument, callback2) {
-            dict = {}
+            let dict = {}
             const location = xmlDocument.getElementsByTagName("item")[0].getElementsByTagName("title")[0].childNodes[0].nodeValue
             const [, zone] = location.split('/')
             const temp = xmlDocument.getElementsByTagName("item")[0].getElementsByTagName("temp")[0].childNodes[0].nodeValue
@@ -634,12 +613,12 @@
         }
 
         function renderCurrentTemp(dict) {
-            document.querySelector('.current-temp').innerHTML = dict['temp']
-            document.querySelector('.timestamp').innerHTML = dict['timestamp'] + ' ' + dict['zone']
+            document.querySelector('.current-temp').textContent = dict['temp']
+            document.querySelector('.timestamp').textContent = dict['timestamp'] + ' ' + dict['zone']
         }
 
         function getCurrentDate(callback) {
-            dict = {}
+            let dict = {}
             const today = new Date()
 
             const date = today.getDate()
@@ -669,95 +648,94 @@
         }
 
         function renderCurrentDate(dict) {
-            document.querySelector('.date-number').innerHTML = dict['date']
+            document.querySelector('.date-number').textContent = dict['date']
             document.querySelector('.date-day').innerHTML = dict['day']
-            document.querySelector('.date-monthweek').innerHTML = dict['month'] + ' v' + dict['week']
-            document.querySelector('.current-time').innerHTML = dict['time']
+            document.querySelector('.date-monthweek').textContent = dict['month'] + ' v' + dict['week']
+            document.querySelector('.current-time').textContent = dict['time']
         }
 
         function renderQuote(data) {
             const random = Math.floor(Math.random() * data.length)
-            document.querySelector('.quote').innerHTML = data[`${random}`].text
-            document.querySelector('.author').innerHTML = data[`${random}`].author
+            document.querySelector('.quote').textContent = data[`${random}`].text
+            document.querySelector('.author').textContent = data[`${random}`].author
         }
-
     </script>
 </head>
 <body>
-    <div class="container">
-        <div class="item" id="item1">
-            <div class="padding"></div>
-            <div class="current-temp">-10.5</div>
-            <div class="timestamp">16:30 Hagaberg</div>
+<div class="container">
+    <div class="item" id="item1">
+        <div class="padding"></div>
+        <div class="current-temp"></div>
+        <div class="timestamp"></div>
+    </div>
+    <div class="item" id="item2">
+        <div class="high-low"></div>
+        <div class="rain"></div>
+        <div class="wind"></div>
+        <div>
+            <audio controls>
+                <source src="http://sverigesradio.se/topsy/direkt/132-hi.mp3" type="audio/mpeg" quality="high">
+                Your browser does not support the audio element.
+            </audio>
         </div>
-        <div class="item" id="item2">
-            <div class="high-low">23 | 12</div>
-            <div class="rain">0 mm</div>
-            <div class="wind">9 m/s</div>
-            <div>
-                <audio controls>
-                    <source src="https://sverigesradio.se/topsy/direkt/132-hi.mp3" type="audio/mpeg" quality="high">
-                    Your browser does not support the audio element.
-                </audio>
+    </div>
+    <div class="item" id="item3">
+        <div class="date-day"></div>
+        <div class="date-number"></div>
+        <div class="date-monthweek"></div>
+    </div>
+    <div class="item" id="item4">
+        <div class="current-time"></div>
+    </div>
+    <div class="item" id="item5">
+        <div class="quote"></div>
+        <div class="author"></div>
+    </div>
+    <div class="item" id="item6">
+        <div class="graph-container"></div>
+    </div>
+    <div class="item" id="item7">
+        <div class="timer-container-1">
+            <div class="hobs">
+                <div class="btn" id="hob-1"></div>
+                <div class="btn" id="hob-2"></div>
+                <div class="btn" id="hob-3"></div>
+                <div class="btn" id="hob-4"></div>
             </div>
-        </div>
-        <div class="item" id="item3">
-            <div class="date-day">Onsdag</div>
-            <div class="date-number">18</div>
-            <div class="date-monthweek">Nov v47</div>
-        </div>
-        <div class="item" id="item4">
-            <div class="current-time">21:54</div>
-        </div>
-        <div class="item" id="item5">
-            <div class="quote">Det var en fin kvallDet var en fin kvallDet var en fin kvallDet var en fin kvallDet var en fin kvallDet var en fin kvall</div>
-            <div class="author">Roger Ljung</div>
-        </div>
-        <div class="item" id="item6">
-            <div class="graph-container"></div>
-        </div>
-        <div class="item" id="item7">
-            <div class="timer-container-1">
-                <div class="hobs">
-                    <div class="btn" id="hob-1"></div>
-                    <div class="btn" id="hob-2"></div>
-                    <div class="btn" id="hob-3"></div>
-                    <div class="btn" id="hob-4"></div>
-                </div>
-                <div class="timer">00:00</div>
-                <audio id="alarm" loop>
-                    <source src="alarm.mp3" type="audio/mpeg">
-                    Your browser does not support the audio element.
-                </audio>
-                <div class="controls">
-                    <div class="btn" id="plus">+</div>
-                    <div class="btn" id="start-pause">&#9654;</div>
-                    <div class="btn" id="minus">-</div>
-                    <div class="btn" id="stop">&#9632;</div>
-                </div>
-            </div>
-        </div>
-        <div class="item" id="item8">
-            <div class="timer-container-2">
-                <div class="hobs">
-                    <div class="btn" id="hob-1"></div>
-                    <div class="btn" id="hob-2"></div>
-                    <div class="btn" id="hob-3"></div>
-                    <div class="btn" id="hob-4"></div>
-                </div>
-                <div class="timer">00:00</div>
-                <audio id="alarm" loop>
-                    <source src="alarm.mp3" type="audio/mpeg">
-                    Your browser does not support the audio element.
-                </audio>
-                <div class="controls">
-                    <div class="btn" id="plus">+</div>
-                    <div class="btn" id="start-pause">&#9654;</div>
-                    <div class="btn" id="minus">-</div>
-                    <div class="btn" id="stop">&#9632;</div>
-                </div>
+            <div class="timer">00:00</div>
+            <audio id="alarm" loop>
+                <source src="alarm.mp3" type="audio/mpeg">
+                Your browser does not support the audio element.
+            </audio>
+            <div class="controls">
+                <div class="btn" id="plus">+</div>
+                <div class="btn" id="start-pause">&#9654;</div>
+                <div class="btn" id="minus">-</div>
+                <div class="btn" id="stop">&#9632;</div>
             </div>
         </div>
     </div>
+    <div class="item" id="item8">
+        <div class="timer-container-2">
+            <div class="hobs">
+                <div class="btn" id="hob-1"></div>
+                <div class="btn" id="hob-2"></div>
+                <div class="btn" id="hob-3"></div>
+                <div class="btn" id="hob-4"></div>
+            </div>
+            <div class="timer">00:00</div>
+            <audio id="alarm" loop>
+                <source src="alarm.mp3" type="audio/mpeg">
+                Your browser does not support the audio element.
+            </audio>
+            <div class="controls">
+                <div class="btn" id="plus">+</div>
+                <div class="btn" id="start-pause">&#9654;</div>
+                <div class="btn" id="minus">-</div>
+                <div class="btn" id="stop">&#9632;</div>
+            </div>
+        </div>
+    </div>
+</div>
 </body>
 </html>
