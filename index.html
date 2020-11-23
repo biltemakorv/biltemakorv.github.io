@@ -1,1 +1,740 @@
-<!DOCTYPE html><html lang="en" xmlns="http://www.w3.org/1999/xhtml"><head> <title>TIWE1</title> <meta charset="utf-8"/> <meta name="viewport" content="width=device-width, initial-scale=1.0"> <link rel="preconnect" href="https://fonts.gstatic.com"> <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;400;500&display=swap" rel="stylesheet"> <style>body{background-color: #707070; margin: 5px; user-select: none; font-family: 'Roboto', sans-serif; overflow: hidden;}.container, .graph-container{display: flex; flex-wrap: wrap; max-width: 800px; justify-content: space-between; margin: auto;}.item{border: 1px solid #555555; border-radius: 5px; display: flex; flex-wrap: wrap; width: 32%; height: 230px; align-items: center; margin-bottom: 1%; justify-content: center; text-align: center; font-weight: bold; background: linear-gradient(45deg, #cdc9c3, #fbf7f0);}.item:nth-child(3){background: linear-gradient(#fbf7f0 28%, #cdc9c3 28%, #e9e3db 72%);}.item:nth-child(3n-2){width: 66%;}.item:nth-child(n+5){width: 100%;}.current-temp, .current-time{width: 100%; font-size: 190px; line-height: 80%;}.padding{height: 5%; width: 100%;}.timestamp{width: 100%; font-size: 12px;}.high-low, .rain, .wind{width: 100%; font-size: 35px;}audio{width: 155px; height: 30px; outline: none;}.date-day, .date-number, .date-monthweek{width: 100%; font-size: 35px;}.date-day{font-size: 45px; height: 28%;}.date-number{font-size: 120px; line-height: 70%;}.date-monthweek{font-size: 30px;}.quote{font-size: 25px; font-weight: normal; margin-left: 12%; margin-right: 12%; width: 100%; margin-top: 7%;}.author{font-size: 20px; font-weight: normal; font-style: italic; margin-bottom: 4%; margin-top: 1%; width: 100%;}.graph-container{display: flex; height: 90%; width: 99%; margin-right: 1%; margin-bottom: 80%; justify-content: center; align-items: flex-end;}.graph-item, .graph-item-cold{width: 1.03%; border-radius: 3px; font-size: 15px; font-weight: normal;}.graph-item:nth-child(4n+1){background: #777777;}.graph-item:nth-child(4n+2){background: #ed6663;}.graph-item-cold:nth-child(4n+2){background: #a1bed0;}.graph-item:nth-child(4n+3){background: #fca652;}.graph-item:nth-child(4n+4){background: #4e89ae;}.graph-text{position: relative; top: -20px; color: dimgrey;}.graph-time{position: relative; left: 7px;}.graph-time-newday{position: relative; left: 7px; top: 124px;}.timer-container-1, .timer-container-2{display: flex; align-items: center; justify-content: center;}.hobs, .controls{display: flex; justify-content: space-around; align-items: center; flex-wrap: wrap; width: 25%;}.hobs{border: 1px solid #555555; border-radius: 25px;}.btn{height: 80px; width: 80px; border-radius: 50%; border: 1px solid #555555; font-size: 45px; line-height: 170%; margin-top: 2%; margin-bottom: 2%;}.controls > .btn:active{background: #cdc9c3; color: black;}#plus, #start-pause, #minus, #stop{transition: all 0.1s; transition-delay: 50ms;}#plus:active, #start-pause:active, #minus:active, #stop:active{transition: none;}.timer{width: 40%; justify-content: center; align-items: center; font-size: 140px; margin-right: 5%;}.blink{animation: blinker 0.6s linear infinite;}@keyframes blinker{50%{opacity: 0;}}@media (max-width: 799px){body{overflow: auto;}.container{flex-direction: column;}.item{min-width: 100%;}.current-temp, .current-time{font-size: 135px;}.btn{height: 40px; width: 40px; font-size: 20px; line-height: 200%;}.timer{font-size: 60px;}}</style> <script>document.addEventListener("DOMContentLoaded", function (){document.querySelector("#item1").style.display="flex" document.querySelector("#item2").style.display="flex" document.querySelector("#item3").style.display="flex" document.querySelector("#item4").style.display="flex" document.querySelector("#item5").style.display="none" document.querySelector("#item6").style.display="none" document.querySelector("#item7").style.display="none" document.querySelector("#item8").style.display="none" document.querySelectorAll(".item").forEach((div)=>{div.addEventListener("click", showPage)}) const quote_url='https://type.fit/api/quotes' const forecast_url='https://opendata-download-metfcst.smhi.se/api/category/pmp3g/version/2/geotype/point/lon/15.616092/lat/58.394557/data.json' const temp_url='https://api.temperatur.nu/tnu_1.12.php?lat=58.394557&lon=15.616092&num=3&cli=test_app2' fetchData(forecast_url, filterForecast, renderGraph, renderSummary) requestData(temp_url, filterCurrentTemp, renderCurrentTemp) getCurrentDate(renderCurrentDate) setInterval(getCurrentDate, 1000, renderCurrentDate) setInterval(requestData, 480000, temp_url, filterCurrentTemp, renderCurrentTemp) setInterval(fetchData, 600000, forecast_url, filterForecast, renderGraph, renderSummary) fetchData(quote_url, renderQuote) const timer1=createTimer(1, 0) const timer2=createTimer(2, 600)}); function showPage(){if (event.target.className !='btn'){document.querySelectorAll(".item").forEach((div)=>{div.style.display='none'}) if (this.id=="item5" || this.id=="item6" || this.id=="item7" || this.id=="item8"){document.querySelector("#item1").style.display="flex" document.querySelector("#item2").style.display="flex" document.querySelector("#item3").style.display="flex" document.querySelector("#item4").style.display="flex"}else if (this.id=="item1" || this.id=="item2"){document.querySelector("#item5").style.display="flex" document.querySelector("#item6").style.display="flex"}else{document.querySelector("#item7").style.display="flex" document.querySelector("#item8").style.display="flex"}}}function createTimer(n, time){function createHobs(n){document.querySelectorAll(`.timer-container-${n}> .hobs > .btn`).forEach((btn)=>{btn.addEventListener("click", pressHob)}) let alrdy_pressed; let hobs=document.querySelectorAll(`.timer-container-${n}> .hobs > .btn`) function pressHob(){const pressed_hob=document.querySelector(`.timer-container-${n}> .hobs > #${this.id}`) hobs.forEach((btn)=>{btn.style.backgroundColor='transparent'}) if (pressed_hob==alrdy_pressed){alrdy_pressed=''}else{pressed_hob.style.backgroundColor='black' alrdy_pressed=pressed_hob}}}createHobs(n) const plus_btn=document.querySelector(`.timer-container-${n}> .controls > #plus`) const minus_btn=document.querySelector(`.timer-container-${n}> .controls > #minus`) const start_pause_btn=document.querySelector(`.timer-container-${n}> .controls > #start-pause`) const stop_btn=document.querySelector(`.timer-container-${n}> .controls > #stop`) plus_btn.onclick=plus; start_pause_btn.onclick=start_pause; minus_btn.onclick=minus; stop_btn.onclick=stop; let counter=time; let interval; let ongoing=false; let timer=document.querySelector(`.timer-container-${n}> .timer`) let alarm=document.querySelector(`.timer-container-${n}> #alarm`) let alarm_started=false display_countdown(counter); function plus(){counter +=60; display_countdown(counter);}function minus(){if (counter >=60){counter -=60;}display_countdown(counter);}function start_pause(){if (counter > 0 && ongoing==false){ongoing=true; interval=setInterval(countdown, 1000); start_pause_btn.innerHTML='&#10074;&#10074;'}else{start_pause_btn.innerHTML='&#9654;' ongoing=false; pause_countdown();}display_countdown(counter);}function countdown(){if (counter > 0){counter -=1; display_countdown(counter);}else{end();}}function pause_countdown(){clearInterval(interval);}function stop(){ongoing=false; start_pause_btn.innerHTML='&#9654;' clearInterval(interval); counter=0; display_countdown(counter);}function end(){ongoing=false; clearInterval(interval); timer.classList.add("blink"); start_pause_btn.innerHTML='&#9654;' startAlarm()}function startAlarm(){alarm.play(); alarm_started=true}function stopAlarm(){alarm_started=false alarm.pause(); alarm.currentTime=0;}function display_countdown(number){if (alarm_started==true){stopAlarm()}timer.classList.remove("blink"); const minutes=String(~~(number / 60)).padStart(2, "0"); const seconds=String(~~(number % 60)).padStart(2, "0"); total=minutes + ":" + seconds; timer.textContent=total;}}function fetchData(url, callback, callback2, callback3){fetch(`${url}`) .then(response=> response.json()) .then(data=>{callback(data, callback2, callback3)})}function filterForecast(data, callback2, callback3){document.querySelector(".graph-container").innerHTML='' let today=data.timeSeries[0].validTime.slice(8, 10) let flag=true let dict2={'warmest': -50, 'coldest': 50, 'windiest': 0, 'total_precip': 0}loop1: for (i=0; i < 24; i++){dict={}loop2: for (j=0; j < data.timeSeries[0].parameters.length; j++){if (data.timeSeries[i].parameters[j].name=='t'){dict["temp"]=data.timeSeries[i].parameters[j].values[0]}else if (data.timeSeries[i].parameters[j].name=='pmean'){dict["prec"]=data.timeSeries[i].parameters[j].values[0]}else if (data.timeSeries[i].parameters[j].name=='ws'){dict["wind"]=data.timeSeries[i].parameters[j].values[0]}if (Object.keys(dict).length==3){dict["time"]=data.timeSeries[i].validTime.slice(11, 13) callback2(dict) break loop2}}if (today==data.timeSeries[i].validTime.slice(8, 10)){if (dict["temp"] > dict2['warmest']){dict2['warmest']=dict["temp"]}if (dict["temp"] < dict2['coldest']){dict2['coldest']=dict["temp"]}if (dict["wind"] > dict2['windiest']){dict2['windiest']=dict["wind"]}dict2['total_precip'] +=dict["prec"]}else if (flag){callback3(dict2) flag=false}}}function renderSummary(dict){document.querySelector('.high-low').textContent=Math.round(dict['warmest']) + ' | ' + Math.round(dict['coldest']) document.querySelector('.rain').textContent=Math.round(dict['total_precip']) + ' mm' document.querySelector('.wind').textContent=Math.round(dict['windiest']) + ' m/s'}function renderGraph(dict){function checkZero(number){if (number !=0){return Math.round(number)}else{return ' '}}function checkMinus(number){if (number + 30 < 31){return 'graph-item-cold'}else{return 'graph-item'}}function checkDayText(time){if (time !='00'){return 'graph-time'}else{return 'graph-time-newday'}}function checkDayBar(time){if (time !='00'){return '0%'}else{return '60%'}}let temp=dict["temp"] let prec=dict["prec"] let wind=dict["wind"] let time=dict["time"] const tempSpan=document.createElement("span") tempSpan.className="graph-text" tempSpan.textContent=Math.round(temp) const precSpan=document.createElement("span") precSpan.className="graph-text" precSpan.textContent=checkZero(prec) const windSpan=document.createElement("span") windSpan.className="graph-text" windSpan.textContent=checkZero(wind) const timeSpan=document.createElement("span") timeSpan.className=checkDayText(time) timeSpan.textContent=time const tempDiv=document.createElement("div") tempDiv.style.height=`${temp + 30}%` tempDiv.className=checkMinus(temp) const precDiv=document.createElement("div") precDiv.className="graph-item" precDiv.style.height=`${prec * 3}%` const windDiv=document.createElement("div") windDiv.className="graph-item" windDiv.style.height=`${wind * 3}%` const timeDiv=document.createElement("div") timeDiv.className="graph-item" timeDiv.style.height=checkDayBar(time) tempDiv.appendChild(tempSpan) precDiv.appendChild(precSpan) windDiv.appendChild(windSpan) timeDiv.appendChild(timeSpan) document.querySelector(".graph-container").append(timeDiv) document.querySelector(".graph-container").append(tempDiv) document.querySelector(".graph-container").append(windDiv) document.querySelector(".graph-container").append(precDiv)}function requestData(url, callback, callback2){const xhr=new XMLHttpRequest() xhr.open('GET', `${url}`) xhr.send() xhr.onload=function (){if (xhr.readyState===xhr.DONE){if (xhr.status===200){const data=xhr.responseText const domParser=new DOMParser() const xmlDocument=domParser.parseFromString(data, "text/xml") callback(xmlDocument, callback2)}else{alert(`Error ${xhr.status}: ${xhr.statusText}`)}}}xhr.onerror=function (){alert("Request failed")}}function filterCurrentTemp(xmlDocument, callback2){let dict={}const location=xmlDocument.getElementsByTagName("item")[0].getElementsByTagName("title")[0].childNodes[0].nodeValue const [, zone]=location.split('/') const temp=xmlDocument.getElementsByTagName("item")[0].getElementsByTagName("temp")[0].childNodes[0].nodeValue const today=new Date() const timestamp=String(today.getHours()).padStart(2, '0') + ":" + String(today.getMinutes()).padStart(2, '0') dict={'zone': zone, 'temp': temp, 'timestamp': timestamp}callback2(dict)}function renderCurrentTemp(dict){document.querySelector('.current-temp').textContent=dict['temp'] document.querySelector('.timestamp').textContent=dict['timestamp'] + ' ' + dict['zone']}function getCurrentDate(callback){let dict={}const today=new Date() const date=today.getDate() const minutes=String(today.getMinutes()).padStart(2, '0') const time=today.getHours() + ":" + minutes const days=['S&ouml;ndag', 'M&aring;ndag', 'Tisdag', 'Onsdag', 'Torsdag', 'Fredag', 'L&ouml;rdag'] const day=days[today.getDay()] const months=['Jan', 'Feb', 'Mar', 'Apr', 'Maj', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dec'] const month=months[today.getMonth()] const onejan=new Date(today.getFullYear(), 0, 1) const week=Math.ceil((((today.getTime() - onejan.getTime()) / 86400000) + onejan.getDay() + 1) / 7) dict={'date': date, 'day': day, 'month': month, 'time': time, 'week': week}callback(dict)}function renderCurrentDate(dict){document.querySelector('.date-number').textContent=dict['date'] document.querySelector('.date-day').innerHTML=dict['day'] document.querySelector('.date-monthweek').textContent=dict['month'] + ' v' + dict['week'] document.querySelector('.current-time').textContent=dict['time']}function renderQuote(data){const random=Math.floor(Math.random() * data.length) document.querySelector('.quote').textContent=data[`${random}`].text document.querySelector('.author').textContent=data[`${random}`].author}</script></head><body><div class="container"> <div class="item" id="item1"> <div class="padding"></div><div class="current-temp"></div><div class="timestamp"></div></div><div class="item" id="item2"> <div class="high-low"></div><div class="rain"></div><div class="wind"></div><div> <audio controls> <source src="http://sverigesradio.se/topsy/direkt/132-hi.mp3" type="audio/mpeg" quality="high"> Your browser does not support the audio element. </audio> </div></div><div class="item" id="item3"> <div class="date-day"></div><div class="date-number"></div><div class="date-monthweek"></div></div><div class="item" id="item4"> <div class="current-time"></div></div><div class="item" id="item5"> <div class="quote"></div><div class="author"></div></div><div class="item" id="item6"> <div class="graph-container"></div></div><div class="item" id="item7"> <div class="timer-container-1"> <div class="hobs"> <div class="btn" id="hob-1"></div><div class="btn" id="hob-2"></div><div class="btn" id="hob-3"></div><div class="btn" id="hob-4"></div></div><div class="timer">00:00</div><audio id="alarm" loop> <source src="alarm.mp3" type="audio/mpeg"> Your browser does not support the audio element. </audio> <div class="controls"> <div class="btn" id="plus">+</div><div class="btn" id="start-pause">&#9654;</div><div class="btn" id="minus">-</div><div class="btn" id="stop">&#9632;</div></div></div></div><div class="item" id="item8"> <div class="timer-container-2"> <div class="hobs"> <div class="btn" id="hob-1"></div><div class="btn" id="hob-2"></div><div class="btn" id="hob-3"></div><div class="btn" id="hob-4"></div></div><div class="timer">00:00</div><audio id="alarm" loop> <source src="alarm.mp3" type="audio/mpeg"> Your browser does not support the audio element. </audio> <div class="controls"> <div class="btn" id="plus">+</div><div class="btn" id="start-pause">&#9654;</div><div class="btn" id="minus">-</div><div class="btn" id="stop">&#9632;</div></div></div></div></div></body></html>
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>TIWE1</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;400;500&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #707070;
+            margin: 5px;
+            user-select: none;
+            font-family: 'Roboto', sans-serif;
+            overflow: hidden;
+        }
+
+        .container, .graph-container {
+            display: flex;
+            flex-wrap: wrap;
+            max-width: 800px;
+            justify-content: space-between;
+            margin: auto;
+        }
+
+        .item {
+            border: 1px solid #555555;
+            border-radius: 5px;
+            display: flex;
+            flex-wrap: wrap;
+            width: 32%;
+            height: 230px;
+            align-items: center;
+            margin-bottom: 1%;
+            justify-content: center;
+            text-align: center;
+            font-weight: bold;
+            background: linear-gradient(45deg, #cdc9c3, #fbf7f0);
+        }
+
+            .item:nth-child(3) {
+                background: linear-gradient(#fbf7f0 28%, #cdc9c3 28%, #e9e3db 72%);
+            }
+
+            .item:nth-child(3n-2) {
+                width: 66%;
+            }
+
+            .item:nth-child(n+5) {
+                width: 100%;
+            }
+
+        .current-temp, .current-time {
+            width: 100%;
+            font-size: 190px;
+            line-height: 80%;
+        }
+
+        .padding {
+            height: 5%;
+            width: 100%;
+        }
+
+        .timestamp {
+            width: 100%;
+            font-size: 12px;
+        }
+
+        .high-low, .rain, .wind {
+            width: 100%;
+            font-size: 35px;
+        }
+
+        audio {
+            width: 155px;
+            height: 30px;
+            outline: none;
+        }
+
+        .date-day, .date-number, .date-monthweek {
+            width: 100%;
+            font-size: 35px;
+        }
+
+        .date-day {
+            font-size: 45px;
+            height: 28%;
+        }
+
+        .date-number {
+            font-size: 120px;
+            line-height: 70%;
+        }
+
+        .date-monthweek {
+            font-size: 30px;
+        }
+
+        .quote {
+            font-size: 25px;
+            font-weight: normal;
+            margin-left: 12%;
+            margin-right: 12%;
+            width: 100%;
+            margin-top: 7%;
+        }
+
+        .author {
+            font-size: 20px;
+            font-weight: normal;
+            font-style: italic;
+            margin-bottom: 4%;
+            margin-top: 1%;
+            width: 100%;
+        }
+
+
+        .graph-container {
+            display: flex;
+            height: 90%;
+            width: 99%;
+            margin-right: 1%;
+            margin-bottom: 80%;
+            justify-content: center;
+            align-items: flex-end;
+        }
+
+        .graph-item, .graph-item-cold {
+            width: 1.03%;
+            border-radius: 3px;
+            font-size: 15px;
+            font-weight: normal;
+        }
+
+            .graph-item:nth-child(4n+1) {
+                background: #777777;
+            }
+
+            .graph-item:nth-child(4n+2) {
+                background: #ed6663;
+            }
+
+            .graph-item-cold:nth-child(4n+2) {
+                background: #a1bed0;
+            }
+
+            .graph-item:nth-child(4n+3) {
+                background: #fca652;
+            }
+
+            .graph-item:nth-child(4n+4) {
+                background: #4e89ae;
+            }
+
+        .graph-text {
+            position: relative;
+            top: -20px;
+            color: dimgrey;
+        }
+
+        .graph-time {
+            position: relative;
+            left: 7px;
+        }
+
+        .graph-time-newday {
+            position: relative;
+            left: 7px;
+            top: 124px;
+        }
+
+
+        .timer-container-1, .timer-container-2 {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hobs, .controls {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-wrap: wrap;
+            width: 25%;
+        }
+
+        .hobs {
+            border: 1px solid #555555;
+            border-radius: 25px;
+        }
+
+        .btn {
+            height: 80px;
+            width: 80px;
+            border-radius: 50%;
+            border: 1px solid #555555;
+            font-size: 45px;
+            line-height: 170%;
+            margin-top: 2%;
+            margin-bottom: 2%;
+        }
+
+        .controls > .btn:active {
+            background: #cdc9c3;
+            color: black;
+        }
+
+
+        #plus, #start-pause, #minus, #stop {
+            transition: all 0.1s;
+            transition-delay: 50ms;
+        }
+
+            #plus:active, #start-pause:active, #minus:active, #stop:active {
+                transition: none;
+            }
+
+        .timer {
+            width: 40%;
+            justify-content: center;
+            align-items: center;
+            font-size: 140px;
+            margin-right: 5%;
+        }
+
+        .blink {
+            animation: blinker 0.6s linear infinite;
+        }
+
+        @keyframes blinker {
+            50% {
+                opacity: 0;
+            }
+        }
+
+        @media (max-width: 799px) {
+            body {
+                overflow: auto;
+            }
+
+            .container {
+                flex-direction: column;
+            }
+
+            .item {
+                min-width: 100%;
+            }
+
+            .current-temp, .current-time {
+                font-size: 135px;
+            }
+
+            .btn {
+                height: 40px;
+                width: 40px;
+                font-size: 20px;
+                line-height: 200%;
+            }
+
+            .timer {
+                font-size: 60px;
+            }
+        }
+    </style>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelector("#item1").style.display = "flex"
+            document.querySelector("#item2").style.display = "flex"
+            document.querySelector("#item3").style.display = "flex"
+            document.querySelector("#item4").style.display = "flex"
+            document.querySelector("#item5").style.display = "none"
+            document.querySelector("#item6").style.display = "none"
+            document.querySelector("#item7").style.display = "none"
+            document.querySelector("#item8").style.display = "none"
+
+            document.querySelectorAll(".item").forEach((div) => {
+                div.addEventListener("click", showPage)
+            })
+
+            const quote_url = 'https://type.fit/api/quotes'
+            const forecast_url = 'https://opendata-download-metfcst.smhi.se/api/category/pmp3g/version/2/geotype/point/lon/15.616092/lat/58.394557/data.json'
+            const temp_url = 'https://api.temperatur.nu/tnu_1.12.php?lat=58.394557&lon=15.616092&num=3&cli=test_app2'
+
+            fetchData(forecast_url, filterForecast, renderGraph, renderSummary)
+            requestData(temp_url, filterCurrentTemp, renderCurrentTemp)
+            getCurrentDate(renderCurrentDate)
+
+            setInterval(getCurrentDate, 1000, renderCurrentDate)
+            setInterval(requestData, 480000, temp_url, filterCurrentTemp, renderCurrentTemp)
+            setInterval(fetchData, 600000, forecast_url, filterForecast, renderGraph, renderSummary)
+
+            fetchData(quote_url, renderQuote)
+
+            const timer1 = createTimer(1, 0)
+            const timer2 = createTimer(2, 600)
+        });
+
+        function showPage() {
+            if (event.target.className != 'btn') {
+                document.querySelectorAll(".item").forEach((div) => {
+                    div.style.display = 'none'
+                })
+                if (this.id == "item5" || this.id == "item6" || this.id == "item7" || this.id == "item8") {
+                    document.querySelector("#item1").style.display = "flex"
+                    document.querySelector("#item2").style.display = "flex"
+                    document.querySelector("#item3").style.display = "flex"
+                    document.querySelector("#item4").style.display = "flex"
+                } else if (this.id == "item1" || this.id == "item2") {
+                    document.querySelector("#item5").style.display = "flex"
+                    document.querySelector("#item6").style.display = "flex"
+
+                } else {
+                    document.querySelector("#item7").style.display = "flex"
+                    document.querySelector("#item8").style.display = "flex"
+                }
+            }
+        }
+
+        function createTimer(n, time) {
+
+            function createHobs(n) {
+                document.querySelectorAll(`.timer-container-${n} > .hobs > .btn`).forEach((btn) => {
+                    btn.addEventListener("click", pressHob)
+                })
+
+                let alrdy_pressed;
+                let hobs = document.querySelectorAll(`.timer-container-${n} > .hobs > .btn`)
+
+                function pressHob() {
+                    const pressed_hob = document.querySelector(`.timer-container-${n} > .hobs > #${this.id}`)
+                    hobs.forEach((btn) => {
+                        btn.style.backgroundColor = 'transparent'
+                    })
+                    if (pressed_hob == alrdy_pressed) {
+                        alrdy_pressed = ''
+                    } else {
+                        pressed_hob.style.backgroundColor = 'black'
+                        alrdy_pressed = pressed_hob
+                    }
+                }
+            }
+
+            createHobs(n)
+
+            const plus_btn = document.querySelector(`.timer-container-${n} > .controls > #plus`)
+            const minus_btn = document.querySelector(`.timer-container-${n} > .controls > #minus`)
+            const start_pause_btn = document.querySelector(`.timer-container-${n} > .controls > #start-pause`)
+            const stop_btn = document.querySelector(`.timer-container-${n} > .controls > #stop`)
+
+            plus_btn.onclick = plus;
+            start_pause_btn.onclick = start_pause;
+            minus_btn.onclick = minus;
+            stop_btn.onclick = stop;
+
+            let counter = time;
+            let interval;
+            let ongoing = false;
+            let timer = document.querySelector(`.timer-container-${n} > .timer`)
+
+            let alarm = document.querySelector(`.timer-container-${n} > #alarm`)
+            let alarm_started = false
+
+            display_countdown(counter);
+
+            function plus() {
+                counter += 60;
+                display_countdown(counter);
+            }
+
+            function minus() {
+                if (counter >= 60) {
+                    counter -= 60;
+                }
+                display_countdown(counter);
+            }
+
+            function start_pause() {
+                if (counter > 0 && ongoing == false) {
+                    ongoing = true;
+                    interval = setInterval(countdown, 1000);
+                    start_pause_btn.innerHTML = '&#10074;&#10074;'
+                } else {
+                    start_pause_btn.innerHTML = '&#9654;'
+                    ongoing = false;
+                    pause_countdown();
+                }
+                display_countdown(counter);
+            }
+
+            function countdown() {
+                if (counter > 0) {
+                    counter -= 1;
+                    display_countdown(counter);
+                } else {
+                    end();
+                }
+            }
+
+            function pause_countdown() {
+                clearInterval(interval);
+            }
+
+            function stop() {
+                ongoing = false;
+                start_pause_btn.innerHTML = '&#9654;'
+                clearInterval(interval);
+                counter = 0;
+                display_countdown(counter);
+            }
+
+            function end() {
+                ongoing = false;
+                clearInterval(interval);
+                timer.classList.add("blink");
+                start_pause_btn.innerHTML = '&#9654;'
+                startAlarm()
+            }
+
+            function startAlarm() {
+                alarm.play();
+                alarm_started = true
+            }
+
+            function stopAlarm() {
+                alarm_started = false
+                alarm.pause();
+                alarm.currentTime = 0;
+            }
+
+            function display_countdown(number) {
+                if (alarm_started == true) {
+                    stopAlarm()
+                }
+                timer.classList.remove("blink");
+                const minutes = String(~~(number / 60)).padStart(2, "0");
+                const seconds = String(~~(number % 60)).padStart(2, "0");
+                total = minutes + ":" + seconds;
+                timer.textContent = total;
+            }
+        }
+
+        function fetchData(url, callback, callback2, callback3) {
+            fetch(`${url}`)
+                .then(response => response.json())
+                .then(data => {
+                    callback(data, callback2, callback3)
+                })
+        }
+
+        function filterForecast(data, callback2, callback3) {
+            document.querySelector(".graph-container").innerHTML = ''
+
+            let today = data.timeSeries[0].validTime.slice(8, 10)
+            let flag = true
+            let dict2 = { 'warmest': -50, 'coldest': 50, 'windiest': 0, 'total_precip': 0 }
+            loop1:
+            for (i = 0; i < 24; i++) {
+                dict = {}
+                loop2:
+                for (j = 0; j < data.timeSeries[0].parameters.length; j++) {
+                    if (data.timeSeries[i].parameters[j].name == 't') {
+                        dict["temp"] = data.timeSeries[i].parameters[j].values[0]
+                    } else if (data.timeSeries[i].parameters[j].name == 'pmean') {
+                        dict["prec"] = data.timeSeries[i].parameters[j].values[0]
+                    } else if (data.timeSeries[i].parameters[j].name == 'ws') {
+                        dict["wind"] = data.timeSeries[i].parameters[j].values[0]
+                    }
+                    if (Object.keys(dict).length == 3) {
+                        dict["time"] = data.timeSeries[i].validTime.slice(11, 13)
+                        callback2(dict)
+                        break loop2
+                    }
+                }
+
+                if (today == data.timeSeries[i].validTime.slice(8, 10)) {
+                    if (dict["temp"] > dict2['warmest']) {
+                        dict2['warmest'] = dict["temp"]
+                    }
+                    if (dict["temp"] < dict2['coldest']) {
+                        dict2['coldest'] = dict["temp"]
+                    }
+                    if (dict["wind"] > dict2['windiest']) {
+                        dict2['windiest'] = dict["wind"]
+                    }
+                    dict2['total_precip'] += dict["prec"]
+
+                } else if (flag) {
+                    callback3(dict2)
+                    flag = false
+                }
+            }
+        }
+
+        function renderSummary(dict) {
+            document.querySelector('.high-low').textContent = Math.round(dict['warmest']) + ' | ' + Math.round(dict['coldest'])
+            document.querySelector('.rain').textContent = Math.round(dict['total_precip']) + ' mm'
+            document.querySelector('.wind').textContent = Math.round(dict['windiest']) + ' m/s'
+        }
+
+        function renderGraph(dict) {
+            function checkZero(number) {
+                if (number != 0) {
+                    return Math.round(number)
+                } else {
+                    return ' '
+                }
+            }
+
+            function checkMinus(number) {
+                if (number + 30 < 31) {
+                    return 'graph-item-cold'
+                } else {
+                    return 'graph-item'
+                }
+            }
+
+            function checkDayText(time) {
+                if (time != '00') {
+                    return 'graph-time'
+                } else {
+                    return 'graph-time-newday'
+                }
+            }
+
+            function checkDayBar(time) {
+                if (time != '00') {
+                    return '0%'
+                } else {
+                    return '60%'
+                }
+            }
+            let temp = dict["temp"]
+            let prec = dict["prec"]
+            let wind = dict["wind"]
+            let time = dict["time"]
+
+            const tempSpan = document.createElement("span")
+            tempSpan.className = "graph-text"
+            tempSpan.textContent = Math.round(temp)
+            const precSpan = document.createElement("span")
+            precSpan.className = "graph-text"
+            precSpan.textContent = checkZero(prec)
+            const windSpan = document.createElement("span")
+            windSpan.className = "graph-text"
+            windSpan.textContent = checkZero(wind)
+            const timeSpan = document.createElement("span")
+            timeSpan.className = checkDayText(time)
+            timeSpan.textContent = time
+
+            const tempDiv = document.createElement("div")
+            tempDiv.style.height = `${temp + 30}%`
+            tempDiv.className = checkMinus(temp)
+            const precDiv = document.createElement("div")
+            precDiv.className = "graph-item"
+            precDiv.style.height = `${prec * 3}%`
+            const windDiv = document.createElement("div")
+            windDiv.className = "graph-item"
+            windDiv.style.height = `${wind * 3}%`
+            const timeDiv = document.createElement("div")
+            timeDiv.className = "graph-item"
+            timeDiv.style.height = checkDayBar(time)
+
+            tempDiv.appendChild(tempSpan)
+            precDiv.appendChild(precSpan)
+            windDiv.appendChild(windSpan)
+            timeDiv.appendChild(timeSpan)
+
+            document.querySelector(".graph-container").append(timeDiv)
+            document.querySelector(".graph-container").append(tempDiv)
+            document.querySelector(".graph-container").append(windDiv)
+
+            document.querySelector(".graph-container").append(precDiv)
+        }
+
+        function requestData(url, callback, callback2) {
+            const xhr = new XMLHttpRequest()
+            xhr.open('GET', `${url}`)
+            xhr.send()
+
+            xhr.onload = function () {
+                if (xhr.readyState === xhr.DONE) {
+                    if (xhr.status === 200) {
+                        const data = xhr.responseText
+                        const domParser = new DOMParser()
+                        const xmlDocument = domParser.parseFromString(data, "text/xml")
+                        callback(xmlDocument, callback2)
+                    } else {
+                        alert(`Error ${xhr.status}: ${xhr.statusText}`)
+                    }
+                }
+            }
+            xhr.onerror = function () {
+                alert("Request failed")
+            }
+
+        }
+
+        function filterCurrentTemp(xmlDocument, callback2) {
+            let dict = {}
+            const location = xmlDocument.getElementsByTagName("item")[0].getElementsByTagName("title")[0].childNodes[0].nodeValue
+            const [, zone] = location.split('/')
+            const temp = xmlDocument.getElementsByTagName("item")[0].getElementsByTagName("temp")[0].childNodes[0].nodeValue
+            const today = new Date()
+            const timestamp = String(today.getHours()).padStart(2, '0') + ":" + String(today.getMinutes()).padStart(2, '0')
+
+            dict = {
+                'zone': zone,
+                'temp': temp,
+                'timestamp': timestamp
+            }
+            callback2(dict)
+        }
+
+        function renderCurrentTemp(dict) {
+            document.querySelector('.current-temp').textContent = dict['temp']
+            document.querySelector('.timestamp').textContent = dict['timestamp'] + ' ' + dict['zone']
+        }
+
+        function getCurrentDate(callback) {
+            let dict = {}
+            const today = new Date()
+
+            const date = today.getDate()
+
+            const minutes = String(today.getMinutes()).padStart(2, '0')
+            const time = today.getHours() + ":" + minutes
+
+            const days = ['S&ouml;ndag', 'M&aring;ndag', 'Tisdag', 'Onsdag', 'Torsdag', 'Fredag', 'L&ouml;rdag']
+            const day = days[today.getDay()]
+
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Maj', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dec']
+            const month = months[today.getMonth()]
+
+
+            const onejan = new Date(today.getFullYear(), 0, 1)
+            const week = Math.ceil((((today.getTime() - onejan.getTime()) / 86400000) + onejan.getDay() + 1) / 7)
+
+            dict = {
+                'date': date,
+                'day': day,
+                'month': month,
+                'time': time,
+                'week': week
+            }
+
+            callback(dict)
+        }
+
+        function renderCurrentDate(dict) {
+            document.querySelector('.date-number').textContent = dict['date']
+            document.querySelector('.date-day').innerHTML = dict['day']
+            document.querySelector('.date-monthweek').textContent = dict['month'] + ' v' + dict['week']
+            document.querySelector('.current-time').textContent = dict['time']
+        }
+
+        function renderQuote(data) {
+            const random = Math.floor(Math.random() * data.length)
+            document.querySelector('.quote').textContent = data[`${random}`].text
+            document.querySelector('.author').textContent = data[`${random}`].author
+        }
+    </script>
+</head>
+<body>
+<div class="container">
+    <div class="item" id="item1">
+        <div class="padding"></div>
+        <div class="current-temp"></div>
+        <div class="timestamp"></div>
+    </div>
+    <div class="item" id="item2">
+        <div class="high-low"></div>
+        <div class="rain"></div>
+        <div class="wind"></div>
+        <div>
+            <audio controls>
+                <source src="http://sverigesradio.se/topsy/direkt/132-hi.mp3" type="audio/mpeg" quality="high">
+                Your browser does not support the audio element.
+            </audio>
+        </div>
+    </div>
+    <div class="item" id="item3">
+        <div class="date-day"></div>
+        <div class="date-number"></div>
+        <div class="date-monthweek"></div>
+    </div>
+    <div class="item" id="item4">
+        <div class="current-time"></div>
+    </div>
+    <div class="item" id="item5">
+        <div class="quote"></div>
+        <div class="author"></div>
+    </div>
+    <div class="item" id="item6">
+        <div class="graph-container"></div>
+    </div>
+    <div class="item" id="item7">
+        <div class="timer-container-1">
+            <div class="hobs">
+                <div class="btn" id="hob-1"></div>
+                <div class="btn" id="hob-2"></div>
+                <div class="btn" id="hob-3"></div>
+                <div class="btn" id="hob-4"></div>
+            </div>
+            <div class="timer">00:00</div>
+            <audio id="alarm" loop>
+                <source src="alarm.mp3" type="audio/mpeg">
+                Your browser does not support the audio element.
+            </audio>
+            <div class="controls">
+                <div class="btn" id="plus">+</div>
+                <div class="btn" id="start-pause">&#9654;</div>
+                <div class="btn" id="minus">-</div>
+                <div class="btn" id="stop">&#9632;</div>
+            </div>
+        </div>
+    </div>
+    <div class="item" id="item8">
+        <div class="timer-container-2">
+            <div class="hobs">
+                <div class="btn" id="hob-1"></div>
+                <div class="btn" id="hob-2"></div>
+                <div class="btn" id="hob-3"></div>
+                <div class="btn" id="hob-4"></div>
+            </div>
+            <div class="timer">00:00</div>
+            <audio id="alarm" loop>
+                <source src="alarm.mp3" type="audio/mpeg">
+                Your browser does not support the audio element.
+            </audio>
+            <div class="controls">
+                <div class="btn" id="plus">+</div>
+                <div class="btn" id="start-pause">&#9654;</div>
+                <div class="btn" id="minus">-</div>
+                <div class="btn" id="stop">&#9632;</div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
