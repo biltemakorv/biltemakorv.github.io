@@ -657,11 +657,11 @@
         }
 
         function weekNumber() {
-            dt = new Date();
-            var tdt = new Date(dt.valueOf());
-            var dayn = (dt.getDay() + 6) % 7;
+            const dt = new Date();
+            let tdt = new Date(dt.valueOf());
+            const dayn = (dt.getDay() + 6) % 7;
             tdt.setDate(tdt.getDate() - dayn + 3);
-            var firstThursday = tdt.valueOf();
+            let firstThursday = tdt.valueOf();
             tdt.setMonth(0, 1);
             if (tdt.getDay() !== 4) {
                 tdt.setMonth(0, 1 + ((4 - tdt.getDay()) + 7) % 7);
