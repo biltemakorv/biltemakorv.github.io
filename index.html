@@ -619,8 +619,8 @@
             let dict = {}
             const today = new Date()
             const date = today.getDate()
-            const time = twentyfourTime(today)
-            const week = weekNumber(today)
+            const time = twentyfourTime()
+            const week = weekNumber()
             const days = ['S&ouml;ndag', 'M&aring;ndag', 'Tisdag', 'Onsdag', 'Torsdag', 'Fredag', 'L&ouml;rdag']
             const day = days[today.getDay()]
             const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Maj', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dec']
@@ -650,15 +650,24 @@
             document.querySelector('.author').textContent = data[`${random}`].author
         }
 
-        function twentyfourTime(today) {
+        function twentyfourTime() {
+            const today = new Date()
             const time = String(today.getHours()).padStart(2, '0') + ":" + String(today.getMinutes()).padStart(2, '0')
             return time
         }
 
-        function weekNumber(today) {
-            const firstDayOfYear = new Date(today.getFullYear(), 0, 1);
-            const pastDaysOfYear = (today.valueOf() - firstDayOfYear.valueOf()) / 86400000;
-            return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
+        function weekNumber() {
+            dt = new Date();
+            var tdt = new Date(dt.valueOf());
+            var dayn = (dt.getDay() + 6) % 7;
+            tdt.setDate(tdt.getDate() - dayn + 3);
+            var firstThursday = tdt.valueOf();
+            tdt.setMonth(0, 1);
+            if (tdt.getDay() !== 4) {
+                tdt.setMonth(0, 1 + ((4 - tdt.getDay()) + 7) % 7);
+            }
+            return 1 + Math.ceil((firstThursday - tdt) / 604800000);
+        }
         }
     </script>
 </head>
