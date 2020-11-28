@@ -618,16 +618,11 @@
         function getCurrentDate(callback) {
             let dict = {}
             const today = new Date()
-
             const date = today.getDate()
-
             const time = twentyfourTime(today)
-
             const week = weekNumber(today)
-
             const days = ['S&ouml;ndag', 'M&aring;ndag', 'Tisdag', 'Onsdag', 'Torsdag', 'Fredag', 'L&ouml;rdag']
             const day = days[today.getDay()]
-
             const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Maj', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dec']
             const month = months[today.getMonth()]
 
