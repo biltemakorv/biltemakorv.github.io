@@ -629,9 +629,7 @@
             const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Maj', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dec']
             const month = months[today.getMonth()]
 
-
-            const onejan = new Date(today.getFullYear(), 0, 1)
-            const week = Math.ceil((((today.getTime() - onejan.getTime()) / 86400000) + onejan.getDay() + 1) / 7)
+            const week = weekNumber()
 
             dict = {
                 'date': date,
@@ -661,6 +659,19 @@
             const today = new Date()
             const time = String(today.getHours()).padStart(2, '0') + ":" + String(today.getMinutes()).padStart(2, '0')
             return time
+        }
+
+        function weekNumber() {
+            dt = new Date();
+            var tdt = new Date(dt.valueOf());
+            var dayn = (dt.getDay() + 6) % 7;
+            tdt.setDate(tdt.getDate() - dayn + 3);
+            var firstThursday = tdt.valueOf();
+            tdt.setMonth(0, 1);
+            if (tdt.getDay() !== 4) {
+                tdt.setMonth(0, 1 + ((4 - tdt.getDay()) + 7) % 7);
+            }
+            return 1 + Math.ceil((firstThursday - tdt) / 604800000);
         }
     </script>
 </head>
